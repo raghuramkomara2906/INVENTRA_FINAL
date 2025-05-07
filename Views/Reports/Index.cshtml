@@ -1,0 +1,105 @@
+@model ADAProject.Models.ReportsViewModel
+@using Newtonsoft.Json
+
+@{
+    ViewData["Title"] = "Data Visualizations";
+    Layout = "_Layout";
+}
+<style>
+  /* only in your Data Viz page (or in site.css, if you scope it) */
+  .panel-reports .panel-body {
+    height: 350px;            /* pick whatever height you like */
+    padding: 15px;            /* preserve your Bootstrap padding */
+  }
+
+  .panel-reports .panel-body canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+  }
+</style>
+
+<h2>Data Visualizations</h2>
+
+<div class="row panel-reports">
+  <!-- Monthly Turnover -->
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">Monthly Inventory Turnover</div>
+      <div class="panel-body">
+        <canvas id="turnoverChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <!-- Category Counts -->
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">In-Stock Items by Category</div>
+      <div class="panel-body">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" style="margin-top:20px;">
+  <!-- Weekly Forecast vs Actual -->
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">Weekly Forecast vs Actual Sales</div>
+      <div class="panel-body">
+        <canvas id="forecastChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // server → JS
+    const turnoverLabels = @Html.Raw(JsonConvert.SerializeObject(Model.MonthlyLabels));
+    const turnoverData   = @Html.Raw(JsonConvert.SerializeObject(Model.MonthlyTurnover));
+    const categoryLabels = @Html.Raw(JsonConvert.SerializeObject(Model.CategoryCounts.Keys));
+    const categoryData   = @Html.Raw(JsonConvert.SerializeObject(Model.CategoryCounts.Values));
+    const weekLabels     = @Html.Raw(JsonConvert.SerializeObject(Model.WeekLabels));
+    const actualData     = @Html.Raw(JsonConvert.SerializeObject(Model.ActualSales));
+    const forecastData   = @Html.Raw(JsonConvert.SerializeObject(Model.ForecastSales));
+
+    // 1) Line chart
+    new Chart(document.getElementById('turnoverChart'), {
+      type: 'line',
+      data: {
+        labels: turnoverLabels,
+        datasets: [{ label: 'Turnover', data: turnoverData, borderColor: '#36A2EB', fill: false }]
+      },
+      options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // 2) Pie chart
+    new Chart(document.getElementById('categoryChart'), {
+      type: 'pie',
+      data: {
+        labels: categoryLabels,
+        datasets: [{
+          data: categoryData,
+          backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF','#FF9F40']
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false  }
+    });
+
+    // 3) Bar chart
+    new Chart(document.getElementById('forecastChart'), {
+      type: 'bar',
+      data: {
+        labels: weekLabels,
+        datasets: [
+          { label: 'Actual',   data: actualData },
+          { label: 'Forecast', data: forecastData }
+        ]
+      },
+      options: { responsive: true }
+    });
+  </script>
+}

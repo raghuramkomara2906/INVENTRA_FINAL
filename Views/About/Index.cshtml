@@ -1,0 +1,200 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us – Inventory Demand Optimizer</title>
+
+  <!-- CSS dependencies -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Calistoga" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+  <style>
+    body { font-family: 'Calistoga', cursive; background: #e8f0fe; }
+
+    /* Sidebar */
+    .sidebar { width:220px; background:#000; color:#fff; height:100vh; position:fixed; transition:width .3s; overflow:hidden; font-size: 18px; }
+    .sidebar-header { padding:15px; text-align:center; }
+    .sidebar-header i { font-size:28px; color:#fff; cursor:pointer; }
+    .sidebar.collapsed { width:60px; }
+    .sidebar ul { list-style:none; padding:0; margin-top:20px; }
+    .sidebar ul li { padding:15px; white-space:nowrap; }
+    .sidebar ul li:hover,
+    .sidebar ul li.active { background:#1e1e1e; }
+    .sidebar a { color:#fff; text-decoration:none; display:flex; align-items:center; }
+    .sidebar a i { width:24px; text-align:center; }
+    .sidebar.collapsed ul li a span { display:none; }
+
+    /* Main wrapper */
+    .main-wrapper { margin-left:220px; padding:30px; transition:margin-left .3s; }
+    .main-wrapper.collapsed { margin-left:60px; }
+
+    /* Topbar */
+    .topbar { position:absolute; top:10px; right:20px; display:flex; align-items:center; }
+    .topbar .logout { cursor:pointer; color:#555; font-size:2.5rem; margin-right:20px; }
+    .topbar .logout:hover { text-decoration:underline; }
+    .topbar i.fa-user-circle { font-size:3rem; cursor:pointer; color:#333; }
+
+    /* Page title */
+    .page-title { font-size:3rem; color:#333; margin-bottom:20px; }
+
+    /* Team cards grid */
+    .team-card {
+      background:#fff;
+      border-radius:8px;
+      box-shadow:0 4px 8px rgba(0,0,0,0.1);
+      text-align:center;
+      padding:20px;
+      margin-bottom:30px;
+    }
+    .team-card img {
+      width: 180px;               /* width of portrait */
+      max-height: 220px;          /* bump this if hair is still cut off */
+      height: auto;               /* maintain aspect ratio */
+      object-fit: contain;        /* show entire image, no cropping */
+      border-radius:8px;
+      margin-bottom:15px;
+    }
+    .team-card h4 {
+      font-size:2rem;
+      margin-bottom:10px;
+    }
+    .team-card p {
+      font-size:1.4rem;
+      margin:0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <i class="fa fa-bars" onclick="toggleSidebar()"></i>
+    </div>
+    <ul>
+      <li><a asp-controller="Home" asp-action="Index"><i class="fa fa-home"></i> <span>Home</span></a></li>
+      <li><a asp-controller="Dashboard" asp-action="Index"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+      <li><a asp-controller="Inventory" asp-action="Index"><i class="fa fa-briefcase"></i> <span>Inventory</span></a></li>
+      <li><a asp-controller="Suppliers" asp-action="Index"><i class="fa fa-truck"></i> <span>Suppliers</span></a></li>
+      <li><a asp-controller="Sales" asp-action="Index"><i class="fa fa-file"></i> <span>Sales Orders</span></a></li>
+      <li><a asp-controller="PurchaseOrders" asp-action="Index"><i class="fa fa-shopping-cart"></i> <span>Purchase Orders</span></a></li>
+      <li><a asp-controller="Reports" asp-action="Index"><i class="fa fa-bar-chart"></i> <span>Data Viz</span></a></li>
+      <li><a asp-controller="DataModel" asp-action="Index"><i class="fa fa-sitemap"></i> <span>Data Model</span></a></li>
+      <li class="active"><a asp-controller="About" asp-action="Index"><i class="fa fa-info-circle"></i> <span>About Us</span></a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-wrapper" id="mainWrapper">
+    <!-- Topbar -->
+    <div class="topbar">
+      <span class="logout" onclick="$('#logoutModal').modal('show')">Logout</span>
+      @* <i class="fa fa-user-circle" onclick="openProfileModal()"></i> *@
+    </div>
+
+    <!-- Page title -->
+    <div class="page-title">About Us</div>
+
+    <!-- 2×2 Grid of team cards -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="team-card">
+            <img src="images/abhijith.jpg" alt="Abhijith Nallana">
+            <h4>Abhijith Nallana</h4>
+            <p><strong>Contributions:</strong>  Led the design and implementation of the responsive front-end using Razor Pages and Bootstrap. Wrote the Entity Framework Core data models and DbContext, and wired up database CRUD calls to the UI cards. Crafted the login/signup flip-cards and managed the overall layout, ensuring a cohesive experience across desktop and mobile. Tuned CSS transitions and modals for a polished, interactive feel.</p>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="team-card">
+            <img src="images/raghu.jpg" alt="Raghu Ram Komara">
+            <h4>Raghu Ram Komara</h4>
+            <p><strong>Contributions:</strong>  Built and maintained the core CRUD operations for Inventory, Sales, and Purchase modules using Entity Framework Core. Developed dynamic JavaScript logic for real-time data updates and integrated ASP.NET Core sessions for user authentication and state management. Optimized data-binding flows between controllers and views to ensure smooth user interactions.</p>
+
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="team-card">
+            <img src="images/monica.jpg" alt="Monica Perumal Venkatesh">
+            <h4>Monica Perumal Venkatesh</h4>
+            <p><strong>Contributions:</strong>  Architected and implemented all charting features with Chart.js—line, pie, and bar charts—for sales turnover, category distribution, and forecasts. Wrote server-side LINQ queries in the ReportsController to power dynamic visualizations and ensured clean JSON serialization for the client. Created reusable chart-configuration objects and documented best practices for extending and theming future dashboards.</p>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="team-card">
+            <img src="images/neethika.jpeg" alt="Neethika Kommidi">
+            <h4>Neethika Kommidi</h3>
+<p><strong>Contributions:</strong> Implemented comprehensive form validation and error handling for all user inputs, including password strength checks and anti-forgery token enforcement. Authored the project documentation and prepared the final presentation deck (PPT), summarizing architecture, data flows, and testing outcomes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout Modal -->
+  <div id="logoutModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header"><h4>Confirm Logout</h4></div>
+      <div class="modal-body"><p>Do you really want to logout?</p></div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="logout()">Yes, Logout</button>
+        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header"><h4>Profile Settings</h4></div>
+      <div class="modal-body">
+        <label>Full Name</label>
+        <input type="text" id="profileName" class="form-control"><br>
+        <label>Email</label>
+        <input type="email" id="profileEmail" class="form-control">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="saveProfile()">Save</button>
+        <button class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- JS Dependencies -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>
+    // Sidebar toggle
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+      document.getElementById('mainWrapper').classList.toggle('collapsed');
+    }
+    // Logout
+    function logout() {
+      localStorage.removeItem('currentUser');
+      window.location.href = '@Url.Action("Index","Account")';
+    }
+    // Profile modal
+    function openProfileModal() { $('#profileModal').modal('show'); }
+    function saveProfile() {
+      const name  = document.getElementById("profileName").value;
+      const email = document.getElementById("profileEmail").value;
+      localStorage.setItem("profile", JSON.stringify({ name, email }));
+      $('#profileModal').modal('hide');
+    }
+    // Populate profile fields
+    document.addEventListener("DOMContentLoaded", ()=>{
+      const prof = JSON.parse(localStorage.getItem("profile"))||{};
+      document.getElementById("profileName").value  = prof.name  || '';
+      document.getElementById("profileEmail").value = prof.email || '';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Data Model – Inventory Demand Optimizer</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Calistoga" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+  <style>
+    body { font-family: 'Calistoga', cursive; background: #e8f0fe; margin: 0; }
+
+    .sidebar { width:220px; background:#000; color:#fff; height:100vh; position:fixed; transition:width .3s; overflow:hidden; font-size: 18px; }
+    .sidebar-header { padding:15px; text-align:center; }
+    .sidebar-header i { font-size:28px; color:#fff; cursor:pointer; }
+    .sidebar.collapsed { width:60px; }
+    .sidebar ul { list-style:none; padding:0; margin-top:20px; }
+    .sidebar ul li { padding:15px; white-space:nowrap; }
+    .sidebar ul li:hover,
+    .sidebar ul li.active { background:#1e1e1e; }
+    .sidebar a { color:#fff; text-decoration:none; display:flex; align-items:center; }
+    .sidebar a i { width:24px; text-align:center; }
+    .sidebar.collapsed ul li a span { display:none; }
+
+    .main-wrapper { margin-left:220px; padding:30px; transition:margin-left .3s; }
+    .main-wrapper.collapsed { margin-left:60px; }
+
+    .topbar { position:absolute; top:10px; right:20px; display:flex; align-items:center; }
+    .topbar .logout { cursor:pointer; color:#555; font-size:2.5rem; margin-right:20px; }
+    .topbar .logout:hover { text-decoration:underline; }
+    .topbar i.fa-user-circle { font-size:3rem; cursor:pointer; color:#333; }
+
+    .page-title { font-size:3rem; color:#333; margin-bottom:20px; }
+
+    .model-image {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <i class="fa fa-bars" onclick="toggleSidebar()"></i>
+  </div>
+  <ul>
+      <li><a asp-controller="Home" asp-action="Index"><i class="fa fa-home"></i> <span>Home</span></a></li>
+      <li><a asp-controller="Dashboard" asp-action="Index"><i class="fa fa-dashboard"></i> <span>Dashboard</span></a></li>
+      <li><a asp-controller="Inventory" asp-action="Index"><i class="fa fa-briefcase"></i> <span>Inventory</span></a></li>
+      <li><a asp-controller="Suppliers" asp-action="Index"><i class="fa fa-truck"></i> <span>Suppliers</span></a></li>
+      <li><a asp-controller="Sales" asp-action="Index"><i class="fa fa-file"></i> <span>Sales Orders</span></a></li>
+      <li><a asp-controller="PurchaseOrders" asp-action="Index"><i class="fa fa-shopping-cart"></i> <span>Purchase Orders</span></a></li>
+      <li><a asp-controller="Reports" asp-action="Index"><i class="fa fa-bar-chart"></i> <span>Data Viz</span></a></li>
+      <li class="active"><a asp-controller="DataModel" asp-action="Index"><i class="fa fa-sitemap"></i> <span>Data Model</span></a></li>
+      <li><a asp-controller="About" asp-action="Index"><i class="fa fa-info-circle"></i> <span>About Us</span></a></li>
+  </ul>
+</div>
+
+<div class="main-wrapper" id="mainWrapper">
+  <div class="topbar">
+    <span class="logout" onclick="$('#logoutModal').modal('show')">Logout</span>
+    @* <i class="fa fa-user-circle" onclick="openProfileModal()"></i> *@
+  </div>
+
+  @* <div class="page-title" id="welcomeTitle">Welcome</div> *@
+
+  <div class="container text-center">
+    <h2>Logical Data Model</h2>
+    <p>This diagram represents two one-to-many relationships with clearly labeled primary and foreign keys.</p>
+    <img src="/images/data_model.jpeg?v=2" alt="Logical Data Model" class="model-image">
+  </div>
+</div>
+
+<div id="logoutModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h4>Confirm Logout</h4></div>
+    <div class="modal-body"><p>Do you really want to logout?</p></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" onclick="logout()">Yes, Logout</button>
+      <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+    </div>
+  </div></div>
+</div>
+
+<div id="profileModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h4>Profile Settings</h4></div>
+    <div class="modal-body">
+      <label>Full Name</label>
+      <input type="text" id="profileName" class="form-control"><br>
+      <label>Email</label>
+      <input type="email" id="profileEmail" class="form-control">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveProfile()">Save</button>
+      <button class="btn btn-default" data-dismiss="modal">Close</button>
+    </div>
+  </div></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    document.getElementById('mainWrapper').classList.toggle('collapsed');
+  }
+
+  function logout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = '@Url.Action("Index","Account")'
+  }
+
+  function openProfileModal() {
+    $('#profileModal').modal('show');
+  }
+
+  function saveProfile() {
+    const name = document.getElementById("profileName").value;
+    const email = document.getElementById("profileEmail").value;
+    localStorage.setItem("profile", JSON.stringify({ name, email }));
+    $('#profileModal').modal('hide');
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const prof = JSON.parse(localStorage.getItem("profile")) || {};
+    const user = localStorage.getItem("currentUser") || "User";
+    document.getElementById("profileName").value = prof.name || '';
+    document.getElementById("profileEmail").value = prof.email || '';
+    document.getElementById("welcomeTitle").innerText = `Welcome ${user}`;
+  });
+</script>
+</body>
+</html>

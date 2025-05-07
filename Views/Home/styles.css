@@ -1,0 +1,252 @@
+/* 1. Navbar height & brand/title size */
+.navbar,
+.navbar-default,
+.navbar-inverse {
+  min-height: 80px;
+  margin-bottom: 0 !important;
+  border-radius: 0 !important;
+}
+.navbar-default .navbar-brand,
+.navbar-inverse .navbar-brand {
+  font-size: 2.5rem;
+  line-height: 80px;
+}
+
+/* 2. Navbar link sizing & vertical centering */
+.navbar-default .navbar-nav > li > a,
+.navbar-inverse .navbar-nav > li > a {
+  font-size: 1.6rem;    /* main nav links */
+  line-height: 80px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* 3. Dropdown item sizing */
+.navbar .dropdown-menu > li > a {
+  font-size: 1.4rem;
+}
+
+/* 4. Toggle button centering */
+.navbar-toggle {
+  margin-top: 22px;
+  margin-bottom: 22px;
+}
+
+/* 5. Allow full‐page scrolling */
+html, body {
+  height: auto !important;
+  overflow: auto !important;
+}
+
+/* 6. Scrolling red warning bar */
+.scrolling_text {
+  position: relative;
+  overflow: hidden;
+  background: red;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+.scrolling_text span {
+  position: absolute;
+  white-space: nowrap;
+  font-size: 2.5rem;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  transform: translateX(-100%);
+  animation: scroll-right 60s linear infinite;
+}
+@keyframes scroll-right {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 7. Cards area background & spacing */
+.background {
+  background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+  padding: 0 0 60px;
+}
+
+/* 8. Center wrapper holds cards tightly */
+.center-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  padding: 20px;
+  margin: 0;
+  height: auto;
+}
+
+/* 9. About section styling */
+#about-section {
+  background: #f2f2f2;
+  padding: 60px 0;
+  margin: 0;
+}
+
+/* 10. Footer flows immediately & larger icons */
+.footer {
+  background: #111;
+  color: #fff;
+  padding: 15px;
+  text-align: center;
+  margin: 0;
+  position: relative;
+}
+.footer .social a {
+  color: white;
+  margin: 0 10px;
+  font-size: 2rem;
+  transition: color 0.3s;
+}
+.footer .social a:hover {
+  color: #00bfff;
+}
+
+/* 11. Increase form‑field font sizes in the flip cards */
+.card-back .form-group label {
+  font-size: 1.3rem;
+}
+.card-back .form-control {
+  font-size: 1.2rem;
+  padding: 10px 12px;
+}
+.card-front .btn,
+.card-back .btn {
+  font-size: 1.2rem;
+  padding: 12px 30px;
+}
+
+/* —— Original styles below —— */
+
+/* Ensure navbar is on top */
+.navbar {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 0;
+}
+
+/* Background stars shouldn't block elements */
+#stars, #stars2, #stars3 {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Improve visibility of the navbar brand on white background */
+.navbar-brand {
+  color: #333 !important;
+}
+
+/* Body styling */
+body {
+  font-family: 'Calistoga', cursive;
+  margin: 0;
+  padding: 0;
+  background: url('images/bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Card flip container */
+.card {
+  width: 350px;
+  height: 450px;
+  perspective: 1000px;
+  position: relative;
+}
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  border-radius: 10px;
+}
+.rotate .card-inner {
+  transform: rotateY(180deg);
+}
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+}
+.card-back {
+  transform: rotateY(180deg);
+}
+.card-icon {
+  width: 80px;
+  height: 80px;
+  margin-top: 20px;
+  object-fit: contain;
+}
+.btn {
+  margin-top: 20px;
+  padding: 10px 25px;
+  font-weight: bold;
+  border-radius: 5px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  color: #000;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Form control overrides */
+input.form-control {
+  border-radius: 5px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Navbar dropdown enhancements */
+.navbar .dropdown-menu {
+  background-color: #222;
+  border-radius: 0;
+  padding: 0;
+}
+.navbar .dropdown-menu > li > a {
+  color: #fff;
+  padding: 10px 20px;
+}
+.navbar .dropdown-menu > li > a:hover {
+  background-color: #444;
+}
+
+/* Logo image alignment fix */
+.navbar-nav > li > img {
+  vertical-align: middle;
+  margin-top: 5px;
+}

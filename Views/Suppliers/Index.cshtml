@@ -1,0 +1,238 @@
+@using Newtonsoft.Json
+@model List<ADAProject.Models.Supplier>
+@{
+    Layout = null;  // or "_Layout" if you have one
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Suppliers – Inventory Demand Optimizer</title>
+
+  <!-- CSS deps -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Calistoga" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <style>
+    body { font-family: 'Calistoga', cursive; background:#e8f0fe; }
+    .sidebar { width:220px; background:#000; color:#fff; height:100vh; position:fixed; transition:width .3s; overflow:hidden; font-size:18px; }
+    .sidebar.collapsed { width:60px; }
+    .sidebar-header { padding:15px; text-align:center; }
+    .sidebar-header i.fa-bars { font-size:28px; color:#fff; cursor:pointer; }
+    .sidebar ul { list-style:none; padding:0; margin-top:20px; }
+    .sidebar ul li { padding:15px; white-space:nowrap; }
+    .sidebar ul li:hover, .sidebar ul li.active { background:#1e1e1e; }
+    .sidebar a { color:#fff; text-decoration:none; display:flex; align-items:center; }
+    .sidebar a i { width:24px; text-align:center; }
+    .sidebar.collapsed ul li a span { display:none; }
+
+    .main-wrapper { margin-left:220px; padding:30px; transition:margin-left .3s; }
+    .main-wrapper.collapsed { margin-left:60px; }
+
+    .topbar { position:absolute; top:10px; right:20px; display:flex; align-items:center; }
+    .topbar .logout { cursor:pointer; color:#555; font-size:2.5rem; margin-right:20px; }
+    .topbar .logout:hover { text-decoration:underline; }
+    .topbar i.fa-user-circle { font-size:3rem; color:#333; }
+
+    h2 { font-size:2.5rem; margin-top:0; }
+    .btn { font-size:1.4rem; padding:8px 16px; margin-right:10px; color:#000 !important; }
+    .btn-success { margin-bottom:20px; }
+
+    .panel-default { border-radius:8px; }
+  .panel-heading {
+    font-size:2.2rem;
+    text-align:center;
+    background:#f7f7f7;
+  }
+
+  /* make the image fit *inside* a fixed box without cropping */
+  .panel-body img {
+    display: block;
+    margin: 0 auto 15px;
+    height: 150px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+    background: #ddd;
+    border-radius: 4px;
+  }
+
+  /* force every panel‐body to be at least X tall, so cards align */
+  .panel-body {
+    padding: 15px;
+    min-height: 260px;
+  }
+
+  .panel-body p {
+    font-size:1.4rem;
+    margin-bottom:1rem;
+  }
+  .panel-body .btn {
+    font-size:1.2rem;
+    padding:6px 12px;
+  }
+
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <i class="fa fa-bars" onclick="toggleSidebar()"></i>
+    </div>
+    <ul>
+      <li><a asp-controller="Home"      asp-action="Index"><i class="fa fa-home"></i><span>Home</span></a></li>
+      <li><a asp-controller="Dashboard" asp-action="Index"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
+      <li><a asp-controller="Inventory" asp-action="Index"><i class="fa fa-briefcase"></i><span>Inventory</span></a></li>
+      <li class="active"><a asp-controller="Suppliers" asp-action="Index"><i class="fa fa-truck"></i><span>Suppliers</span></a></li>
+      <li><a asp-controller="Sales"    asp-action="Index"><i class="fa fa-file"></i><span>Sales Orders</span></a></li>
+      <li><a asp-controller="PurchaseOrders"  asp-action="Index"><i class="fa fa-shopping-cart"></i><span>Purchase Orders</span></a></li>
+      <li><a asp-controller="Reports"   asp-action="Index"><i class="fa fa-bar-chart"></i><span>Data Viz</span></a></li>
+      <li><a asp-controller="DataModel" asp-action="Index"><i class="fa fa-sitemap"></i><span>Data Model</span></a></li>
+      <li><a asp-controller="About"     asp-action="Index"><i class="fa fa-info-circle"></i><span>About Us</span></a></li>
+    </ul>
+  </div>
+
+  <!-- Main wrapper -->
+  <div class="main-wrapper" id="mainWrapper">
+    <div class="topbar">
+      <span class="logout" onclick="$('#logoutModal').modal('show')">Logout</span>
+      @* <i class="fa fa-user-circle" onclick="openProfileModal()"></i> *@
+    </div>
+
+    <h2>Suppliers</h2>
+    <button class="btn btn-success" onclick="openModal()">Add Supplier</button>
+
+    <div class="container-fluid" style="margin-top:20px;">
+      <div class="row" id="supplierGrid">
+        @for(int i = 0; i < Model.Count; i++)
+        {
+          var s = Model[i];
+          <div class="col-sm-4" style="margin-bottom:20px;">
+            <div class="panel panel-default">
+              <div class="panel-heading">@s.Name</div>
+              <div class="panel-body">
+                <p><strong>Contact:</strong> @s.Contact</p>
+                <p><strong>Email:</strong> @s.Email</p>
+                <p><strong>Phone:</strong> @s.Phone</p>
+                <p>
+                  <button class="btn btn-info btn-sm" onclick="openModal(@i)">Edit</button>
+                  <form asp-action="Delete" asp-controller="Suppliers"
+                        asp-route-id="@s.Id" method="post" style="display:inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                  </form>
+                </p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout Modal -->
+  <div id="logoutModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header"><h4>Confirm Logout</h4></div>
+      <div class="modal-body"><p>Do you really want to logout?</p></div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="confirmLogout()">Yes, Logout</button>
+        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header"><h4>Profile Settings</h4></div>
+      <div class="modal-body">
+        <label>Full Name</label>
+        <input type="text" id="profileName" class="form-control"><br>
+        <label>Email</label>
+        <input type="email" id="profileEmail" class="form-control">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="saveProfile()">Save</button>
+        <button class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Add / Edit Supplier Modal -->
+  <div id="supplierModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+      <form id="supplierForm" class="modal-content"
+            asp-controller="Suppliers"
+            method="post">
+        @Html.AntiForgeryToken()
+        <div class="modal-header"><h4>Add / Edit Supplier</h4></div>
+        <div class="modal-body">
+          <input type="hidden" name="Id" id="supplierId" />
+          <input type="text"   name="Name"    id="supplierName"    class="form-control" placeholder="Supplier Name" required><br>
+          <input type="text"   name="Contact" id="supplierContact" class="form-control" placeholder="Contact Person" required><br>
+          <input type="email"  name="Email"   id="supplierEmail"   class="form-control" placeholder="Email"><br>
+          <input type="tel"    name="Phone"   id="supplierPhone"   class="form-control" placeholder="Phone"><br>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button"   class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JS deps -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>
+    // expose your model to JS
+    var suppliers = @Html.Raw(JsonConvert.SerializeObject(Model));
+
+    function toggleSidebar() {
+      $('#sidebar,#mainWrapper').toggleClass('collapsed');
+    }
+    function confirmLogout() {
+      window.location.href = '@Url.Action("Index","Account")';
+    }
+    function openProfileModal() {
+      $('#profileModal').modal('show');
+      var p = JSON.parse(localStorage.getItem('profile')||'{}');
+      $('#profileName').val(p.name||'');
+      $('#profileEmail').val(p.email||'');
+    }
+    function saveProfile() {
+      localStorage.setItem('profile',
+        JSON.stringify({
+          name: $('#profileName').val(),
+          email: $('#profileEmail').val()
+        }));
+      $('#profileModal').modal('hide');
+    }
+
+    function openModal(idx) {
+      var form = $('#supplierForm');
+      if (idx >= 0) {
+        // EDIT
+        var s = suppliers[idx];
+        form.attr('action','/Suppliers/Edit/'+s.Id);
+        $('#supplierId').val(s.Id);
+        $('#supplierName').val(s.Name);
+        $('#supplierContact').val(s.Contact);
+        $('#supplierEmail').val(s.Email);
+        $('#supplierPhone').val(s.Phone);
+      } else {
+        // CREATE
+        form.attr('action','/Suppliers/Create');
+        form[0].reset();
+        $('#supplierId').val(0);
+      }
+      $('#supplierModal').modal('show');
+    }
+  </script>
+</body>
+</html>

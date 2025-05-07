@@ -1,0 +1,233 @@
+@using Newtonsoft.Json
+@model List<ADAProject.Models.PurchaseOrder>
+@{
+    Layout = null;
+    var current = ViewBag.StatusFilter as string ?? "All";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Purchase Orders – Inventory Demand Optimizer</title>
+
+  <!-- Bootstrap & FontAwesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"/>
+  <link href="https://fonts.googleapis.com/css?family=Calistoga" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+
+  <style>
+    body { font-family:'Calistoga', cursive; background:#e8f0fe; }
+    .btn { color:#000 !important; }
+
+    /* Sidebar */
+    .sidebar { width:220px; background:#000; color:#fff; position:fixed; height:100vh; overflow:hidden; transition:width .3s; font-size:18px; }
+    .sidebar.collapsed { width:60px; }
+    .sidebar-header{ padding:15px; text-align:center; }
+    .sidebar-header i.fa-bars{ font-size:28px; color:#fff; cursor:pointer; }
+    .sidebar ul{ list-style:none; padding:0; margin-top:20px; }
+    .sidebar ul li{ padding:15px; white-space:nowrap; }
+    .sidebar ul li:hover,.sidebar ul li.active{ background:#1e1e1e; }
+    .sidebar a{ color:#fff; text-decoration:none; display:flex; align-items:center; }
+    .sidebar a i{ width:24px; text-align:center; }
+    .sidebar.collapsed ul li a span{ display:none; }
+
+    /* Main wrapper */
+    .main-wrapper{ margin-left:220px; padding:30px; transition:margin-left .3s; }
+    .main-wrapper.collapsed{ margin-left:60px; }
+
+    /* Topbar */
+    .topbar{ position:absolute; top:10px; right:20px; display:flex; align-items:center; }
+    .topbar .logout{ cursor:pointer; color:#555; font-size:2.5rem; margin-right:20px; }
+    .topbar .logout:hover{ text-decoration:underline; }
+    .topbar i.fa-user-circle{ font-size:3rem; color:#333; cursor:pointer; }
+
+    /* Page title & button */
+    h2{ font-size:2.5rem; margin-top:0; }
+    .btn-success{ font-size:1.2rem; padding:10px 20px; margin-bottom:20px; }
+
+    /* Status filters */
+    .status-filters{ margin:20px 0; }
+    .status-filters .btn{ margin-right:10px; }
+
+    /* ==== GRID & CARD STYLES ==== */
+    .row.flex-cards {
+      display: flex;
+      flex-wrap: wrap;
+      margin-left: -15px;
+      margin-right: -15px;
+    }
+    .row.flex-cards > .col-sm-4 {
+      display: flex;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .row.flex-cards > .col-sm-4 > .panel {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .row.flex-cards > .col-sm-4 > .panel > .panel-body {
+      flex: 1;
+    }
+
+    .panel-default{ border-radius:8px; }
+    .panel-heading{ font-size:2.2rem; text-align:center; background:#f7f7f7; }
+    .panel-body{ padding:15px; }
+    .panel-body ul.details{ padding-left:20px; margin-bottom:1rem; }
+    .panel-body ul.details li{ margin-bottom:4px; }
+    .panel-body p{ font-size:1.4rem; margin-bottom:1rem; }
+    .panel-body .btn{ font-size:1.2rem; padding:6px 12px; margin-right:5px; }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <i class="fa fa-bars" onclick="toggleSidebar()"></i>
+    </div>
+    <ul>
+      <li><a asp-controller="Home" asp-action="Index"><i class="fa fa-home"></i><span>Home</span></a></li>
+      <li><a asp-controller="Dashboard" asp-action="Index"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
+      <li><a asp-controller="Inventory" asp-action="Index"><i class="fa fa-briefcase"></i><span>Inventory</span></a></li>
+      <li><a asp-controller="Suppliers" asp-action="Index"><i class="fa fa-truck"></i><span>Suppliers</span></a></li>
+      <li><a asp-controller="Sales" asp-action="Index"><i class="fa fa-file"></i><span>Sales Orders</span></a></li>
+      <li class="active"><a asp-controller="PurchaseOrders" asp-action="Index"><i class="fa fa-shopping-cart"></i><span>Purchase Orders</span></a></li>
+      <li><a asp-controller="Reports" asp-action="Index"><i class="fa fa-bar-chart"></i><span>Data Viz</span></a></li>
+      <li><a asp-controller="DataModel" asp-action="Index"><i class="fa fa-sitemap"></i><span>Data Model</span></a></li>
+      <li><a asp-controller="About" asp-action="Index"><i class="fa fa-info-circle"></i><span>About Us</span></a></li>
+    </ul>
+  </div>
+
+  <!-- Main wrapper -->
+  <div class="main-wrapper" id="mainWrapper">
+    <div class="topbar">
+      <span class="logout" onclick="$('#logoutModal').modal('show')">Logout</span>
+    </div>
+
+    <h2>Purchase Orders</h2>
+    <button class="btn btn-success" onclick="openModal()">Create Order</button>
+
+    <div class="status-filters">
+      @foreach(var s in new[]{ "All","Draft","Sent","Received"})
+      {
+        var css = s == current ? "btn btn-primary" : "btn btn-default";
+        <a class="@css" asp-controller="PurchaseOrders" asp-action="Index" asp-route-status="@s">@s</a>
+      }
+    </div>
+
+    <div class="row flex-cards">
+      @for(int i = 0; i < Model.Count; i++)
+      {
+        var po = Model[i];
+        <div class="col-sm-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">@po.Id</div>
+            <div class="panel-body">
+              <ul class="details">
+                @foreach(var line in (po.Details ?? "")
+                                      .Split("||", StringSplitOptions.RemoveEmptyEntries))
+                {
+                  <li>@line</li>
+                }
+              </ul>
+              <p><strong>Status:</strong> @po.Status</p>
+              <p>
+                <button class="btn btn-info btn-sm" onclick="openModal(@i)">Edit</button>
+                <form asp-controller="PurchaseOrders" asp-action="Delete" asp-route-id="@po.Id" method="post" style="display:inline">
+                  @Html.AntiForgeryToken()
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Logout Modal -->
+  <div id="logoutModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+      <div class="modal-header"><h4>Confirm Logout</h4></div>
+      <div class="modal-body"><p>Do you really want to logout?</p></div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="confirmLogout()">Yes, Logout</button>
+        <button class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- Create/Edit Modal -->
+  <div id="poModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+      <form id="poForm" class="modal-content" asp-controller="PurchaseOrders" asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <div class="modal-header"><h4>Create / Edit Purchase</h4></div>
+        <div class="modal-body">
+          <input type="hidden" name="Id" id="poId" />
+          <textarea name="Details" id="poDetails" class="form-control" placeholder="Details" required></textarea><br>
+          <select name="Status" id="poStatus" class="form-control" required>
+            <option value=""></option>
+            <option>Draft</option>
+            <option>Sent</option>
+            <option>Received</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JS deps -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>
+    // one and only orders array
+    var orders = @Html.Raw(JsonConvert.SerializeObject(Model));
+
+    function toggleSidebar() {
+      $('#sidebar,#mainWrapper').toggleClass('collapsed');
+    }
+    function confirmLogout() {
+      window.location.href = '@Url.Action("Index","Account")';
+    }
+
+    function openModal(idx) {
+      var f = $('#poForm');
+
+      if (idx >= 0) {
+        // EDIT
+        var o = orders[idx];
+        f.attr('action', '/PurchaseOrders/Edit/' + o.Id);
+
+        $('#poId').val(o.Id);
+        $('#poDetails').val(o.Details.replace(/\|\|/g, '\n'));
+        $('#poStatus').val(o.Status);
+      } else {
+        // CREATE
+        f.attr('action', '/PurchaseOrders/Create');
+        f[0].reset();
+        $('#poId').val(0);
+        $('#poStatus').val('');
+      }
+
+      $('#poModal').modal('show');
+    }
+    
+    $('#poForm').on('submit', function(){
+      // Take lines in the textarea and re-join with "||"
+      var text = $('#poDetails').val() || '';
+      var lines = text
+        .split(/\r?\n/)      // split at any newline
+        .map(l => l.trim())  // trim whitespace
+        .filter(l => l);     // drop blank lines
+      $('#poDetails').val(lines.join('||'));
+    });
+  </script>
+</body>
+</html>
