@@ -1,0 +1,120 @@
+@model dynamic      
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Inventory Demand Optimizer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Calistoga" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+  <style>
+    /* ... your existing styles ... */
+  </style>
+</head>
+<body>
+  <!-- Navbar / Scrolling / Background etc. (unchanged) -->
+
+  <!-- Signup Card -->
+  <div class="card rotate-box" id="rotatesgnup">
+    <div class="card-inner">
+      <div class="card-front">
+        <h1>Create Account</h1>
+        <p>Click to register.</p>
+        <div class="icon-btn-wrapper">
+          <i class="fa fa-user-plus card-icon"></i>
+          <input type="button" class="btn btn-default" onclick="Rotatesgnup()" value="Add">
+        </div>
+      </div>
+      <div class="card-back">
+        <button class="close" onclick="Rotatesgnupcls()">&times;</button>
+        <form id="signupForm" method="post" action="/Account/Register">
+          @Html.AntiForgeryToken()
+          <label>Username:</label>
+          <input type="text" name="UserName" class="form-control" required>
+          <label>Password:</label>
+          <input type="password" name="Password" class="form-control" required>
+          <label>Confirm Password:</label>
+          <input type="password" name="ConfirmPassword" class="form-control" required>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+          <div id="signupMsg" style="margin-top:10px;"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Card -->
+  <div class="card rotate-box" id="rotatelgn">
+    <div class="card-inner">
+      <div class="card-front">
+        <h1>Login</h1>
+        <p>Existing user? Click to log in.</p>
+        <div class="icon-btn-wrapper">
+          <i class="fa fa-sign-in card-icon"></i>
+          <input type="button" class="btn btn-default" onclick="Rotatelgn()" value="Login">
+        </div>
+      </div>
+      <div class="card-back">
+        <button class="close" onclick="Rotatelgncls()">&times;</button>
+        <form id="loginForm" method="post" action="/Account/Login">
+          @Html.AntiForgeryToken()
+          <label>Username:</label>
+          <input type="text" name="UserName" class="form-control" required>
+          <label>Password:</label>
+          <input type="password" name="Password" class="form-control" required>
+          <button type="submit" class="btn btn-success">Login</button>
+          <div id="loginMsg" style="margin-top:10px;color:red;"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- About / Footer / Scripts (unchanged) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script>
+    function Rotatesgnup()  { document.getElementById("rotatesgnup").classList.add("rotate"); }
+    function Rotatesgnupcls() { document.getElementById("rotatesgnup").classList.remove("rotate"); }
+    function Rotatelgn()    { document.getElementById("rotatelgn").classList.add("rotate"); }
+    function Rotatelgncls()   { document.getElementById("rotatelgn").classList.remove("rotate"); }
+
+    // hijack form submit and do AJAX
+    $('#signupForm').submit(function(e) {
+      e.preventDefault();
+      var form = $(this);
+      $('#signupMsg').text('');
+      $.post(form.attr('action'), form.serialize())
+        .done(function(res) {
+          // expecting { success: true, message: "..." }
+          $('#signupMsg').css('color', res.success ? 'green':'red').text(res.message);
+          if (res.success) form[0].reset();
+        })
+        .fail(function() {
+          $('#signupMsg').css('color','red').text('Server error, please try again.');
+        });
+    });
+
+    $('#loginForm').submit(function(e) {
+      e.preventDefault();
+      var form = $(this);
+      $('#loginMsg').text('');
+      $.post(form.attr('action'), form.serialize())
+        .done(function(res) {
+          if (res.success) {
+            window.location.href = '/Home';
+          } else {
+            $('#loginMsg').text(res.message);
+          }
+        })
+        .fail(function() {
+          $('#loginMsg').text('Server error, please try again.');
+        });
+    });
+  </script>
+</body>
+</html>

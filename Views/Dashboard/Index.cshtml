@@ -1,0 +1,68 @@
+@model ADAProject.Models.DashboardViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="welcome-msg">Welcome, @User.Identity.Name</div>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="stock">Stock</button>
+  <button class="tab-btn"       data-tab="orders">Orders</button>
+</div>
+
+<!-- Stock Tab -->
+<div id="stock" class="tab-content active">
+  <h3>Stock Count</h3>
+  <table class="dashboard-table">
+    <thead>
+      <tr>
+        <th>Cover</th>
+        <th>Name</th>
+        <th>Genre</th>
+        <th>Count</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach(var p in Model.Products)
+      {
+        <tr>
+          <td>
+            <img src="@(string.IsNullOrEmpty(p.Image) 
+                         ? Url.Content("~/images/placeholder.png") 
+                         : p.Image)" 
+                 alt="@p.Name" />
+          </td>
+          <td>@p.Name</td>
+          <td>@p.Genre</td>
+          <td>@p.Count</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<!-- Orders Tab -->
+<div id="orders" class="tab-content">
+  <h3>Orders</h3>
+  @foreach(var o in Model.Orders)
+  {
+    <div class="well">
+      <strong>Order #@o.Id</strong><br/>
+      @Html.Raw(o.Details.Replace("||","<br/>"))<br/>
+      <em>Status:</em> <strong>@o.Status</strong>
+    </div>
+  }
+</div>
+
+@section Scripts {
+  <script>
+    // switch between Stock/Orders tabs
+    $('.tab-btn').click(function(){
+      $('.tab-btn').removeClass('active');
+      $('.tab-content').removeClass('active');
+      $(this).addClass('active');
+      $('#' + $(this).data('tab')).addClass('active');
+    });
+  </script>
+}
